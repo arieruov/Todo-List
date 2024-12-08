@@ -2,13 +2,25 @@ import { useReducer, useState } from "react";
 import { GrFormAdd } from "react-icons/gr";
 import "./App.css";
 
-const reducer = (
-  state: string[],
-  action: { type: string; newTask: string }
-) => {
+interface AddAction {
+  type: "add";
+  newTask: string;
+}
+
+interface DeleteAction {
+  type: "delete";
+  index: number;
+}
+
+type ActionInterface = AddAction | DeleteAction;
+
+const reducer = (state: string[], action: ActionInterface) => {
   switch (action.type) {
     case "add":
       return [...state, action.newTask];
+
+    case "delete":
+      return state.filter((_: string, index: number) => index !== action.index);
 
     default:
       return state;
@@ -36,9 +48,13 @@ const App = () => {
     setTask(event.target.value);
   };
 
-  const taskItems = state.map((task, index) => {
+  const handleDelete = (index: number) => {
+    dispatch({ type: "delete", index: index });
+  };
+
+  const taskItems = state.map((task: string, index: number) => {
     return (
-      <li className="Task-Item" key={index}>
+      <li className="Task-Item" key={index} onClick={() => handleDelete(index)}>
         {task}
       </li>
     );
